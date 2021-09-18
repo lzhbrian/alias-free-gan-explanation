@@ -72,8 +72,8 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 现有 GAN 网络包括的一些基本操作有： Conv， Upsampling， Downsampling， Nonlinearity 四种。 接下来我们就来分别分析， 它们是否有 aliasing 的问题， 并且如果有的话应该如何改进。
 
 <div align="center">
-	<img src="plot/upsample.png" alt="upsample" style="width:250px;" />
-  <img src="plot/downsample.png" alt="upsample" style="width:250px;" />
+	<img src="plot/upsample.png" alt="upsample" style="width:300px;" />
+  <img src="plot/downsample.png" alt="upsample" style="width:300px;" />
 </div>
 
 * Conv
@@ -147,10 +147,10 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
         * Fourier Feature 具体是什么样子的？ 暂时还不知道作者具体的实现方法， 按照 [rosinality/alias-free-gan-pytorch](https://github.com/rosinality/alias-free-gan-pytorch/blob/d1a4c52ea0be9a6a853fe10e486402b276aef94b/model.py#L193) 的实现，是使用每张 feature map 代表某个频率在 x 或 y 方向上的 sin 或 cos 信号， 所以一个频率对应有 4 张特征图， 代码见 [plot_fourier_features.py](plot_fourier_features/plot_fourier_features.py)。 画出来的图大致如下， 每张图表示八个频率：
 
             <div>
-            	<img src="plot_fourier_features/w_sin.png" style="width:250px;">
-              <img src="plot_fourier_features/w_cos.png" style="width:250px;">
-              <img src="plot_fourier_features/h_sin.png" style="width:250px;">
-              <img src="plot_fourier_features/h_cos.png" style="width:250px;">
+            	<img src="plot_fourier_features/w_sin.png" style="width:350px;">
+              <img src="plot_fourier_features/w_cos.png" style="width:350px;">
+              <img src="plot_fourier_features/h_sin.png" style="width:350px;">
+              <img src="plot_fourier_features/h_cos.png" style="width:350px;">
             </div>
 
     * （H）Transformed Fourier Features（Appendix  F）
@@ -181,13 +181,10 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
         * fh = max(s/2, ft) -fc
         * f_{t,0} 可以调节来平衡训练速度与等变性
 
-        <div align="center">
-          <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="width:300px;" />
-        </div>
-
         * 现在层数 N 也不完全取决于输出分辨率了， 作者将所有分辨率的层数都设置成了 14。 （其实应该就是在最后多几层固定最高分辨率）
 
         <div align="center">
+          <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="width:300px;" />
           <img src="source/image-20210917214706969.png" alt="image-20210917214706969" style="width:200px;" />
         	<img src="source/image-20210917012305268.png" alt="image-20210917012305268" style="width:200px;" />
         </div>
