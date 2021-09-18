@@ -27,26 +27,26 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 **目录**
 
-* [1. 动机](#1)
-    * [1.1 连续与离散信号](#1.1)
-    * [1.2 现有 GAN 网络的问题](#1.2)
-    * [1.3 本文核心](#1.3)
-* [2. 方法](#2)
-    * [2.1 基本操作设计](#2.1)
-    * [2.2 等变性 (Equivariant)、 Texture Sticking](#2.2)
-    * [2.3 网络结构具体设计](#2.3)
-* [3. 实验](#3)
-    * [3.1 数据集](#3.1)
-    * [3.2 定量定性结果](#3.2)
-    * [3.3 消融实验](#3.3)
-    * [3.4 特征图可视化](#3.4)
+* [1. 动机](#1-动机)
+    * [1.1 连续与离散信号](#11-连续与离散信号)
+    * [1.2 现有 GAN 网络的问题](#12-现有-gan-网络的问题)
+    * [1.3 本文核心](#13-本文核心)
+* [2. 方法](#2-方法)
+    * [2.1 基本操作设计](#21-基本操作设计)
+    * [2.2 等变性 (Equivariant)、 Texture Sticking](#22-等变性-equivariant-texture-sticking)
+    * [2.3 网络结构具体设计](#23-网络结构具体设计)
+* [3. 实验](#3-实验)
+    * [3.1 数据集](#31-数据集)
+    * [3.2 定量定性结果](#32-定量定性结果)
+    * [3.3 消融实验](#33-消融实验)
+    * [3.4 特征图可视化](#34-特征图可视化)
 
 
 
 
-## <a name='1'></a>1. 动机
+## 1. 动机
 
-#### <a name='1.1'></a>1.1 连续与离散信号
+#### 1.1 连续与离散信号
 
 <div align="center">
   <img src="source/image-20210916233015961.png" alt="image-20210916233015961" style="width:400px;"/>
@@ -59,7 +59,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='1.2'></a>1.2 现有 GAN 网络的问题
+#### 1.2 现有 GAN 网络的问题
 
 理想 GAN 的生成信息方式： 
 * **层级式生成信息**， 从网络的浅层到深层，逐层生成 由粗到细的特征， 由低频到高频 的信息 （e.g. 想生成一张脸， 会按照下面的顺序： 脸的整体轮廓 -> ... -> 皮肤 -> 皮肤表面上的纹理、胡子等） 
@@ -69,7 +69,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='1.3'></a>1.3 本文核心
+#### 1.3 本文核心
 
 希望设计一个 GAN 的网络结构， 可以遵循严格的理想的 **层级式生成信息**， 让每一层都只生成我们想让它生成的频率范围， 去除掉 现有网络里的 **混叠（aliasing）** 问题 （所以本文取名为 Alias Free GAN， 个人认为是这样）。
 
@@ -77,9 +77,9 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-## <a name='2'></a>2. 方法
+## 2. 方法
 
-#### <a name='2.1'></a>2.1 基本操作设计
+#### 2.1 基本操作设计
 
 现有 GAN 网络包括的一些基本操作有： Conv， Upsampling， Downsampling， Nonlinearity 四种。 接下来我们就来分别分析， 它们是否有 aliasing 的问题， 并且如果有的话应该如何改进。
 
@@ -105,7 +105,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='2.2'></a>2.2 等变性 (Equivariant)、 Texture Sticking
+#### 2.2 等变性 (Equivariant)、 Texture Sticking
 
 等变性， 顾名思义就是当输入移动的时候， 输出信号也会跟着一起移动。 我们可以定义两种等变性： 平移等变性、 旋转等变性。
 
@@ -138,7 +138,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='2.3'></a>2.3 网络结构具体设计
+#### 2.3 网络结构具体设计
 
 <div align="center">
   <img src="source/image-20210917020314793.png" alt="image-20210917020314793" style="width:300px;" />
@@ -204,9 +204,9 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-## <a name='3'></a>3. 实验
+## 3. 实验
 
-#### <a name='3.1'></a>3.1 数据集
+#### 3.1 数据集
 
 * FFHQ-U and MetFaces-U： unaligned 版本的 FFHQ 与 MetFaces， 与原数据集区别：Axis-aliged crop rectangles、 保留原图的图片角度、 随机 crop 一个脸的区域、 不用 mirror pad。
 * AFHQv2： 原来的 AFHQ 由于使用了不合适的下采样， 导致出现了混叠的现象， 影响了模型的训练。 改为使用 PIL 里的 Lanczos 重采样方法。
@@ -214,7 +214,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='3.2'></a>3.2 定量定性结果
+#### 3.2 定量定性结果
 
 <div align="center">
   <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="width:300px;" />
@@ -228,7 +228,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='3.3'></a>3.3 消融实验
+#### 3.3 消融实验
 
 <div align="center">
   <img src="source/image-20210917205203726.png" alt="image-20210917205203726" style="width:300px;" />
@@ -245,7 +245,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### <a name='3.4'></a>3.4 特征图可视化
+#### 3.4 特征图可视化
 
 [视频](videos/fig6-video.mp4)
 
