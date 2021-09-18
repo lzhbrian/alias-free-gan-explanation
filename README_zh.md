@@ -14,8 +14,6 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-
-
 **整体逻辑（个人理解）**：
 
 * 建模： 将网络流过的信息视为连续信号， 离散特征图视为对连续信号的采样
@@ -27,37 +25,51 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
+**目录**
+
+* [1. 动机](#1)
+    * [1.1 连续与离散信号](#1.1)
+    * [1.2 现有 GAN 网络的问题](#1.2)
+    * [1.3 本文核心](#1.3)
+* [2. 方法](#2)
+    * [2.1 基本操作设计](#2.1)
+    * [2.2 等变性 (Equivariant)、 Texture Sticking](#2.2)
+    * [2.3 网络结构具体设计](#2.3)
+* [3. 实验](#3)
+    * [3.1 数据集](#3.1)
+    * [3.2 定量定性结果](#3.2)
+    * [3.3 消融实验](#3.3)
+    * [3.4 特征图可视化](#3.4)
 
 
-## 1. 动机
 
-#### 1.1 连续与离散信号
+
+## <a name='1'></a>1. 动机
+
+#### <a name='1.1'></a>1.1 连续与离散信号
 
 <div align="center">
   <img src="source/image-20210916233015961.png" alt="image-20210916233015961" style="width:400px;"/>
 </div>
 
 首先， 我们需要先对 从网络流过的信息 进行一个比较严谨的建模（需要一些信号处理相关知识）
-
 * 作者使用了信号处理相关的知识， 将网络里流过的信息 看成了 **连续信号**， 实际处理的 **离散特征图** 是 对连续信号 的 **一块中间区域** 的 **采样**， 一种方便的表达方式。 离散特征图的 **分辨率** ， 就对应到了采样时的 **采样率**。
 * 我们说的 **高频、低频** 就是指信号通过 **傅里叶变换** 后在 **频域** 里的频率大小
 * 既然是采样， 就需要满足 **奈奎斯特-香农采样定律**（以下简称采样定律）， 就是说信号 **本身的频率** 必须小于 **采样率的一半**（也称 **奈奎斯特频率=采样率/2**）， 这样才不会出现 **aliasing（混叠）** 的现象。
 
 
 
-#### 1.2 现有 GAN 网络的问题
+#### <a name='1.2'></a>1.2 现有 GAN 网络的问题
 
 理想 GAN 的生成信息方式： 
-
 * **层级式生成信息**， 从网络的浅层到深层，逐层生成 由粗到细的特征， 由低频到高频 的信息 （e.g. 想生成一张脸， 会按照下面的顺序： 脸的整体轮廓 -> ... -> 皮肤 -> 皮肤表面上的纹理、胡子等） 
 
 现有 GAN 网络的问题： 
-
 * 按照上面的建模方式， 我们发现， 其实现有的 GAN 的网络结构并没有一个很好的机制去限制 GAN 严格地按照层级式来生成信息。 虽然现有的 GAN 通过限制分辨率（采样率）的方式来让 浅层网络的特征图 无法表示 高频信息， 但是网络的每层操作， 对应在连续域生成的新频率， 并不一定小于那一层采样率对应的 奈奎斯特频率。 如果不满足的话， 就会出现 **混叠（aliasing）** 的现象， 原来的高频信号也会被重构成低频信号， 污染了整个信号。
 
 
 
-#### 1.3 本文核心
+#### <a name='1.3'></a>1.3 本文核心
 
 希望设计一个 GAN 的网络结构， 可以遵循严格的理想的 **层级式生成信息**， 让每一层都只生成我们想让它生成的频率范围， 去除掉 现有网络里的 **混叠（aliasing）** 问题 （所以本文取名为 Alias Free GAN， 个人认为是这样）。
 
@@ -65,14 +77,14 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-## 2. 方法
+## <a name='2'></a>2. 方法
 
-#### 2.1 基本操作设计
+#### <a name='2.1'></a>2.1 基本操作设计
 
 现有 GAN 网络包括的一些基本操作有： Conv， Upsampling， Downsampling， Nonlinearity 四种。 接下来我们就来分别分析， 它们是否有 aliasing 的问题， 并且如果有的话应该如何改进。
 
 <div align="center">
-	<img src="plot/upsample.png" alt="upsample" style="width:300px;" />
+    <img src="plot/upsample.png" alt="upsample" style="width:300px;" />
   <img src="plot/downsample.png" alt="upsample" style="width:300px;" />
 </div>
 
@@ -93,16 +105,14 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### 2.2 等变性 (Equivariant)、 Texture Sticking
+#### <a name='2.2'></a>2.2 等变性 (Equivariant)、 Texture Sticking
 
 等变性， 顾名思义就是当输入移动的时候， 输出信号也会跟着一起移动。 我们可以定义两种等变性： 平移等变性、 旋转等变性。
 
 **平移等变性（Translation Equivariant）**
 
 * 我们发现， 如果网络完全消除掉了 aliasing 的影响， 那么整个网络其实已经具有了平移等变性。
-
     * 为什么呢？  按照上面的理论分析， 如果从连续信号的角度考虑看， 网络的输入是一个时域无限的连续信号， 中间经历了一些操作对信号进行局部重组（Conv）、 新频率的生成 （Nonlinearity），从头到尾在时域都是无限的连续信号的话， 信号时域的平移其实不改变信号的频域的幅度。 因此不管你在时域对输入信号如何进行上下左右平移， 网络的每一层输出都会跟着一起平移， 最终的输出信号肯定也会跟着对应着一起平移。 
-
 * 文中定义了一个指标来衡量平移等变性： EQ-T， 大致意义就是比较 <u>直接对图像做变换</u> 与 <u>对输入做变换后输出图像</u> 两者之间的区别
 
     <div align="center"><img src="source/image-20210917130927681.png" alt="image-20210917130927681" style="width:600px;" /></div>
@@ -128,7 +138,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### 2.3 网络结构具体设计
+#### <a name='2.3'></a>2.3 网络结构具体设计
 
 <div align="center">
   <img src="source/image-20210917020314793.png" alt="image-20210917020314793" style="width:300px;" />
@@ -139,58 +149,45 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 * （config B,H） 将网络输入更改为 Fourier Features
     * （B）将原来 StyleGAN2 里的 learned constant input 更改为 Fourier Features。 
-
         * 根据前面的分析， 我们本质处理的输入是一个无限的连续信号， 因此在这里作者使用了 Fourier Features， 具有无限的特性， 只要对其进行采样就得到实际的离散输入信号。 
-
         * 同时， 由于有一个实际连续的表达式， 我们也可以很方便的对信号进行平移、旋转， 然后进行采样， 输入到网络里， 方便我们来计算 EQ-T 和 EQ-R。
-
         * Fourier Feature 具体是什么样子的？ 暂时还不知道作者具体的实现方法， 按照 [rosinality/alias-free-gan-pytorch](https://github.com/rosinality/alias-free-gan-pytorch/blob/d1a4c52ea0be9a6a853fe10e486402b276aef94b/model.py#L193) 的实现，是使用每张 feature map 代表某个频率在 x 或 y 方向上的 sin 或 cos 信号， 所以一个频率对应有 4 张特征图， 代码见 [plot_fourier_features.py](plot_fourier_features/plot_fourier_features.py)。 画出来的图大致如下， 每张图表示八个频率：
 
-            <div>
-            	<img src="plot_fourier_features/w_sin.png" style="width:350px;">
-              <img src="plot_fourier_features/w_cos.png" style="width:350px;">
-              <img src="plot_fourier_features/h_sin.png" style="width:350px;">
-              <img src="plot_fourier_features/h_cos.png" style="width:350px;">
+            <div align="center">
+                <img src="plot_fourier_features/w_sin.png" style="width:350px;">
+                <img src="plot_fourier_features/w_cos.png" style="width:350px;">
+                <img src="plot_fourier_features/h_sin.png" style="width:350px;">
+                <img src="plot_fourier_features/h_cos.png" style="width:350px;">
             </div>
 
     * （H）Transformed Fourier Features（Appendix  F）
-
         * 将上述的傅里叶特征， 在时域进行随机的旋转或平移（即 w 的 style 也控制输入信号）， 然后再输入到网络中。  w -> t = (rc, rs, tx, ty)， t = t/sqrt(rc^2+rs^2)。 代码见 [plot_fourier_features.py](plot_fourier_features/plot_fourier_features.py)
 
 * （config E） 将特征图往外扩大 10 个px
-
-
     * 在上面的理论假设里， 信号都是无限的， 并且边缘处的 Conv， Upsampling， Downsampling 计算也会使用到特征图边界外的值， 因此在这里我们可以采用如下的做法来模拟特征图无限的情况：
-
         * 将输入特征图往外扩 10个px 的 margin 
         * 如果没有 upsample， 那么 feature map 还是有 10px 的 margin， 不用特别处理。
         * 如果有 upsample， 由于 margin 也会 upsample m 倍， 所以要 在 upsample 做完操作后， 再把>10px margin 的部分 crop 掉。
 
 * （config E,G,T） 采样率及低通滤波设计
-
     * （E）按照上面的分析， 一个很直观的做法 （critical sampling） 就是将 低通滤波器 的 cutoff fc 设置为采样率的一半 s/2， fh 设置成 (\sqrt{2} - 1) (s/2)。 
-
     * （G）但是上面这么做的话其实比较危险， 因为我们的低通滤波器是近似的， 在频域不是理想的矩形窗， 因此在临界处会有一些漏掉的频率依然能够通过。 所以在这里， 作者将 cutoff fc 设置成了 s/2 - fh， 直观上理解就是保留少一些， 多滤掉一些， 比较保险不会产生 aliasing。 除了最后几层， cutoff 还是设置成了 s/2， 因为最后一层确实特别需要比较高频的特征。
-
     * （T） 作者发现， 上述低通滤波器的 attenuation 对于低分辨率层来说仍然不够。 原本的每层设计思路都有固定的规则， 作者在这里提出其实完全可以给每层单独设计， 希望在低分辨率层里具有尽量大的 attenuation， 在尽量高分辨率层里尽量保留大部分的高频特征。
-
         * 下图展示了一个 N=14 层的 Generator 设计， 最后两层是 critical sampled（fc = s/2）。
         * fc （蓝线）从第一层开始， 一直到倒数第二层几何成长为 sN/2。
         * 最小可接受 stopband freq ft（黄线） 从开始设置为 f_{t,0} = 2^2.1， 同样也几何增长， 但比 fc 慢一些， 倒数两层的 ft = fc * 2^0.3。
         * 每层的采样率 s （红线）设置为 大于等于黄线的最小2的倍数的两倍，（但不超过最终的输出分辨率）
         * fh = max(s/2, ft) -fc
         * f_{t,0} 可以调节来平衡训练速度与等变性
-
         * 现在层数 N 也不完全取决于输出分辨率了， 作者将所有分辨率的层数都设置成了 14。 （其实应该就是在最后多几层固定最高分辨率）
 
         <div align="center">
-          <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="width:300px;" />
-          <img src="source/image-20210917214706969.png" alt="image-20210917214706969" style="width:200px;" />
-        	<img src="source/image-20210917012305268.png" alt="image-20210917012305268" style="width:200px;" />
+            <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="width:300px;" />
+            <img src="source/image-20210917214706969.png" alt="image-20210917214706969" style="width:200px;" />
+            <img src="source/image-20210917012305268.png" alt="image-20210917012305268" style="width:200px;" />
         </div>
 
 * （config R） 旋转等变性。 如前所述， 需要将 Conv 和 LPF 替换成 径向对称 kernel。 
-
     * Conv： 将 所有 3x3 的 conv 都变成了 1x1 的
     * LPF： 使用了 jinc 函数， 也用了与 sinc 同样的 window 方法：
         <img src="source/image-20210917222512704.png" alt="image-20210917222512704" style="zoom:35%;" />
@@ -207,9 +204,9 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-## 3. 实验
+## <a name='3'></a>3. 实验
 
-#### 3.1 数据集
+#### <a name='3.1'></a>3.1 数据集
 
 * FFHQ-U and MetFaces-U： unaligned 版本的 FFHQ 与 MetFaces， 与原数据集区别：Axis-aliged crop rectangles、 保留原图的图片角度、 随机 crop 一个脸的区域、 不用 mirror pad。
 * AFHQv2： 原来的 AFHQ 由于使用了不合适的下采样， 导致出现了混叠的现象， 影响了模型的训练。 改为使用 PIL 里的 Lanczos 重采样方法。
@@ -217,7 +214,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### 3.2 定量定性结果
+#### <a name='3.2'></a>3.2 定量定性结果
 
 <div align="center">
   <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="width:300px;" />
@@ -231,7 +228,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### 3.2 消融实验
+#### <a name='3.3'></a>3.3 消融实验
 
 <div align="center">
   <img src="source/image-20210917205203726.png" alt="image-20210917205203726" style="width:300px;" />
@@ -248,7 +245,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 
 
-#### 3.3 特征图可视化
+#### <a name='3.4'></a>3.4 特征图可视化
 
 [视频](videos/fig6-video.mp4)
 
