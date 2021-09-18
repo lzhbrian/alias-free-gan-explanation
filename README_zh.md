@@ -34,7 +34,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 #### 1.1 连续与离散信号
 
 <div align="center">
-  <img src="source/image-20210916233015961.png" alt="image-20210916233015961" style="zoom:25%;"/>
+  <img src="source/image-20210916233015961.png" alt="image-20210916233015961" style="width:400px;"/>
 </div>
 
 首先， 我们需要先对 从网络流过的信息 进行一个比较严谨的建模（需要一些信号处理相关知识）
@@ -72,8 +72,8 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 现有 GAN 网络包括的一些基本操作有： Conv， Upsampling， Downsampling， Nonlinearity 四种。 接下来我们就来分别分析， 它们是否有 aliasing 的问题， 并且如果有的话应该如何改进。
 
 <div align="center">
-	<img src="plot/upsample.png" alt="upsample" style="zoom:40%;" />
-  <img src="plot/downsample.png" alt="upsample" style="zoom:40%;" />
+	<img src="plot/upsample.png" alt="upsample" style="width:250px;" />
+  <img src="plot/downsample.png" alt="upsample" style="width:250px;" />
 </div>
 
 * Conv
@@ -105,7 +105,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 * 文中定义了一个指标来衡量平移等变性： EQ-T， 大致意义就是比较 <u>直接对图像做变换</u> 与 <u>对输入做变换后输出图像</u> 两者之间的区别
 
-    <div align="center"><img src="source/image-20210917130927681.png" alt="image-20210917130927681" style="width:85%;" /></div>
+    <div align="center"><img src="source/image-20210917130927681.png" alt="image-20210917130927681" style="width:600px;" /></div>
 
 **旋转等变性（Rotation Equivariant）**
 
@@ -116,12 +116,12 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 * 文中定义了一个指标来衡量旋转等变性： EQ-R， 大致意义同 EQ-T
 
-    <div align="center"><img src="source/image-20210917131037667.png" alt="image-20210917131037667" style="width:80%;" /></div>
+    <div align="center"><img src="source/image-20210917131037667.png" alt="image-20210917131037667" style="width:600px;" /></div>
 
 **Texture Sticking**
 
 <div align="center">
-  <img src="source/image-20210916002435902.png" alt="image-20210916002435902" style="zoom:25%;" />
+  <img src="source/image-20210916002435902.png" alt="image-20210916002435902" style="width:500px;" />
 </div>
 
 * 原文中开头就提到了 Texture Sticking（[视频](videos/slice-vid.mp4)） 这个现象， 我们可以发现具有 等变性的网络其实就不会出现这个现象。 这个现象的具体表现为高频特征与低频特征不会一起等速进行变换， 但如果网络具有等变性， 那么所有的特征一定都是等速一起变换的， 这个现象自然不会出现。
@@ -131,7 +131,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 #### 2.3 网络结构具体设计
 
 <div align="center">
-  <img src="source/image-20210917020314793.png" alt="image-20210917020314793" style="zoom:20%;" />
+  <img src="source/image-20210917020314793.png" alt="image-20210917020314793" style="width:300px;" />
 </div>
 
 除了上述的一些基础操作的改变之外， 整体上网络还有一些其他的变化。
@@ -147,10 +147,10 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
         * Fourier Feature 具体是什么样子的？ 暂时还不知道作者具体的实现方法， 按照 [rosinality/alias-free-gan-pytorch](https://github.com/rosinality/alias-free-gan-pytorch/blob/d1a4c52ea0be9a6a853fe10e486402b276aef94b/model.py#L193) 的实现，是使用每张 feature map 代表某个频率在 x 或 y 方向上的 sin 或 cos 信号， 所以一个频率对应有 4 张特征图， 代码见 [plot_fourier_features.py](plot_fourier_features/plot_fourier_features.py)。 画出来的图大致如下， 每张图表示八个频率：
 
             <div>
-            	<img src="plot_fourier_features/w_sin.png" style="zoom:50%">
-              <img src="plot_fourier_features/w_cos.png" style="zoom:50%">
-              <img src="plot_fourier_features/h_sin.png" style="zoom:35%">
-              <img src="plot_fourier_features/h_cos.png" style="zoom:50%">
+            	<img src="plot_fourier_features/w_sin.png" style="width:250px;">
+              <img src="plot_fourier_features/w_cos.png" style="width:250px;">
+              <img src="plot_fourier_features/h_sin.png" style="width:250px;">
+              <img src="plot_fourier_features/h_cos.png" style="width:250px;">
             </div>
 
     * （H）Transformed Fourier Features（Appendix  F）
@@ -182,14 +182,14 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
         * f_{t,0} 可以调节来平衡训练速度与等变性
 
         <div align="center">
-          <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="zoom:40%;" />
+          <img src="source/image-20210917215737862.png" alt="image-20210917215737862" style="width:300px;" />
         </div>
 
         * 现在层数 N 也不完全取决于输出分辨率了， 作者将所有分辨率的层数都设置成了 14。 （其实应该就是在最后多几层固定最高分辨率）
 
         <div align="center">
-          <img src="source/image-20210917214706969.png" alt="image-20210917214706969" style="zoom:28%;" />
-        	<img src="source/image-20210917012305268.png" alt="image-20210917012305268" style="zoom:30%;" />
+          <img src="source/image-20210917214706969.png" alt="image-20210917214706969" style="width:200px;" />
+        	<img src="source/image-20210917012305268.png" alt="image-20210917012305268" style="width:200px;" />
         </div>
 
 * （config R） 旋转等变性。 如前所述， 需要将 Conv 和 LPF 替换成 径向对称 kernel。 
@@ -223,7 +223,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 #### 3.2 定量定性结果
 
 <div align="center">
-  <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="zoom:30%;" />
+  <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="width:300px;" />
 </div>
 
 * FFHQ (1024×1024) 
@@ -237,8 +237,8 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 #### 3.2 消融实验
 
 <div align="center">
-  <img src="source/image-20210917205203726.png" alt="image-20210917205203726" style="zoom:25%;" />
-  <img src="source/image-20210917205257000.png" alt="image-20210917205257000" style="zoom:20%;" />
+  <img src="source/image-20210917205203726.png" alt="image-20210917205203726" style="width:300px;" />
+  <img src="source/image-20210917205257000.png" alt="image-20210917205257000" style="width:300px;" />
 </div>
 
 * mixing reg. 无害， 但也可以不加（Appendix A）
@@ -256,7 +256,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 [视频](videos/fig6-video.mp4)
 
 <div align="center">
-  <img src="source/image-20210917204255781.png" alt="image-20210917204255781" style="zoom:40%;" />
+  <img src="source/image-20210917204255781.png" alt="image-20210917204255781" style="width:500px;" />
 </div>
 
 
