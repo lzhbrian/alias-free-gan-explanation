@@ -144,7 +144,7 @@ plt.savefig('w_cos.png')
 
 ## H
 # sin
-fig = plt.figure(figsize=(10, 5))
+fig = plt.figure()
 ax = fig.add_subplot(2, 4, 1, projection='3d'); plot3d(ax, out[0, 0].numpy())
 ax = fig.add_subplot(2, 4, 2, projection='3d'); plot3d(ax, out[0, 1].numpy())
 ax = fig.add_subplot(2, 4, 3, projection='3d'); plot3d(ax, out[0, 2].numpy())
