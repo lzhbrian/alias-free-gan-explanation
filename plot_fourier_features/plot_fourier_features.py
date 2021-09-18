@@ -175,15 +175,96 @@ plt.savefig('h_cos.png')
 
 
 
-# plt.subplot(2, 4, 1); plt.imshow(out[0, 0])
-# plt.subplot(2, 4, 2); plt.imshow(out[0, 1])
-# plt.subplot(2, 4, 3); plt.imshow(out[0, 2])
-# plt.subplot(2, 4, 4); plt.imshow(out[0, 3])
-# plt.subplot(2, 4, 5); plt.imshow(out[0, 4])
-# plt.subplot(2, 4, 6); plt.imshow(out[0, 5])
-# plt.subplot(2, 4, 7); plt.imshow(out[0, 6])
-# plt.subplot(2, 4, 8); plt.imshow(out[0, 7])
+plt.subplot(2, 4, 1); plt.imshow(out[0, 0])
+plt.subplot(2, 4, 2); plt.imshow(out[0, 1])
+plt.subplot(2, 4, 3); plt.imshow(out[0, 2])
+plt.subplot(2, 4, 4); plt.imshow(out[0, 3])
+plt.subplot(2, 4, 5); plt.imshow(out[0, 4])
+plt.subplot(2, 4, 6); plt.imshow(out[0, 5])
+plt.subplot(2, 4, 7); plt.imshow(out[0, 6])
+plt.subplot(2, 4, 8); plt.imshow(out[0, 7])
+plt.show()
+
+
+
+
+
+
+################################################################################
+# transformed
+
+a = FourierFeature(size, margin, num_channel, fc)
+# a.forward(1).shape
+out = a.forward(1, torch.Tensor([[0.866,0.5,0.2,0.4]]))
+# print(out.shape) # [1, num_channel, 26, 26] NCHW
+# print(out)
+
+
+## W
+# sin
+fig = plt.figure()
+ax = fig.add_subplot(2, 4, 1, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 0].numpy())
+ax = fig.add_subplot(2, 4, 2, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 1].numpy())
+ax = fig.add_subplot(2, 4, 3, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 2].numpy())
+ax = fig.add_subplot(2, 4, 4, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 3].numpy())
+ax = fig.add_subplot(2, 4, 5, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 4].numpy())
+ax = fig.add_subplot(2, 4, 6, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 5].numpy())
+ax = fig.add_subplot(2, 4, 7, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 6].numpy())
+ax = fig.add_subplot(2, 4, 8, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 2 + 7].numpy())
 # plt.show()
+plt.tight_layout()
+plt.suptitle('transormed_w_sin')
+plt.savefig('transormed_w_sin.png')
+# cos
+fig = plt.figure()
+ax = fig.add_subplot(2, 4, 1, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 0].numpy())
+ax = fig.add_subplot(2, 4, 2, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 1].numpy())
+ax = fig.add_subplot(2, 4, 3, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 2].numpy())
+ax = fig.add_subplot(2, 4, 4, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 3].numpy())
+ax = fig.add_subplot(2, 4, 5, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 4].numpy())
+ax = fig.add_subplot(2, 4, 6, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 5].numpy())
+ax = fig.add_subplot(2, 4, 7, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 6].numpy())
+ax = fig.add_subplot(2, 4, 8, projection='3d'); plot3d(ax, out[0, num_channel // 4 * 3 + 7].numpy())
+# plt.show()
+plt.tight_layout()
+plt.suptitle('transormed_w_cos')
+plt.savefig('transormed_w_cos.png')
+
+
+
+
+## H
+# sin
+fig = plt.figure()
+ax = fig.add_subplot(2, 4, 1, projection='3d'); plot3d(ax, out[0, 0].numpy())
+ax = fig.add_subplot(2, 4, 2, projection='3d'); plot3d(ax, out[0, 1].numpy())
+ax = fig.add_subplot(2, 4, 3, projection='3d'); plot3d(ax, out[0, 2].numpy())
+ax = fig.add_subplot(2, 4, 4, projection='3d'); plot3d(ax, out[0, 3].numpy())
+ax = fig.add_subplot(2, 4, 5, projection='3d'); plot3d(ax, out[0, 4].numpy())
+ax = fig.add_subplot(2, 4, 6, projection='3d'); plot3d(ax, out[0, 5].numpy())
+ax = fig.add_subplot(2, 4, 7, projection='3d'); plot3d(ax, out[0, 6].numpy())
+ax = fig.add_subplot(2, 4, 8, projection='3d'); plot3d(ax, out[0, 7].numpy())
+# plt.show()
+plt.tight_layout()
+plt.suptitle('transormed_h_sin')
+plt.savefig('transormed_h_sin.png')
+
+# cos
+fig = plt.figure()
+ax = fig.add_subplot(2, 4, 1, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 0].numpy())
+ax = fig.add_subplot(2, 4, 2, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 1].numpy())
+ax = fig.add_subplot(2, 4, 3, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 2].numpy())
+ax = fig.add_subplot(2, 4, 4, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 3].numpy())
+ax = fig.add_subplot(2, 4, 5, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 4].numpy())
+ax = fig.add_subplot(2, 4, 6, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 5].numpy())
+ax = fig.add_subplot(2, 4, 7, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 6].numpy())
+ax = fig.add_subplot(2, 4, 8, projection='3d'); plot3d(ax, out[0, num_channel // 4 + 7].numpy())
+# plt.show()
+plt.tight_layout()
+plt.suptitle('transormed_h_cos')
+plt.savefig('transormed_h_cos.png')
+
+
 
 
 
