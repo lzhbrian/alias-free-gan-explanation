@@ -190,7 +190,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 * （config R） 旋转等变性。 如前所述， 需要将 Conv 和 LPF 替换成 径向对称 kernel。 
     * Conv： 将 所有 3x3 的 conv 都变成了 1x1 的
     * LPF： 使用了 jinc 函数， 也用了与 sinc 同样的 window 方法：
-        <img src="source/image-20210917222512704.png" alt="image-20210917222512704" style="zoom:35%;" />
+        <img src="source/image-20210917222512704.png" alt="image-20210917222512704" style="width:400px;" />
 
 * （config C, D） 其他设计
     * （C）去除 per-pixel noise。 高斯噪声的频域是一个均匀分布， 显然会有不满足采样定律的部分， 因此去除掉。
