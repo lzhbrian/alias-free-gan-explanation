@@ -235,6 +235,7 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 <div align="center">
   <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="width:300px;" />
 </div>
+
 * FFHQ (1024×1024) 
     * 三个 G 的参数量分别是：30.0M, 22.3M, 15.8M
     * 训练时间分别是： 1106, 1576 (+42%), 2248 (+103%) GPU 小时
