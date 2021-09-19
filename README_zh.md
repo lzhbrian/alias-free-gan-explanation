@@ -7,7 +7,7 @@
 
 **写这篇文章的动机**： 最近花了几天的时间看了下这篇 paper， 感觉这篇论文实在是让我太难读懂了。 所以我希望重新用我自己的语言组织一下这篇论文的主要思想， 可能有一些表述会与原文不同。 当然， 我的理解可能会出现偏差， 如果有的话请随意纠正我。
 
-**免责声明**： 仅是我自己对这篇文章的理解， 还是建议去看原文。 Repo 里放的视频都来自 [原文的官网](https://nvlabs.github.io/alias-free-gan/)。
+**免责声明**： 仅是我自己对这篇文章的理解， 还是建议去看原文。 Repo 里放的视频都来自 [原文的官网](https://nvlabs.github.io/alias-free-gan/)。 一些与代码实现相关的细节在这里没有讨论。
 
 Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint arXiv:2106.12423 (2021).
 [[原论文]](https://arxiv.org/abs/2106.12423) [[代码]](https://github.com/NVlabs/alias-free-gan)

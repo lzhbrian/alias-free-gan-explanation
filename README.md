@@ -7,7 +7,7 @@ Trying to understand alias-free-gan in my own way.
 
 **motivation of this article**: So, the thing is, I've been reading the paper for several days, and the paper is written in a way that I find really hard to understand. Thus, I decide to rephrase the main idea of the paper in my language. Some explanation might be different from the original paper. Of course, I might be making mistakes, so please feel free to correct me.
 
-**disclaimer**: This paragraph is only my personal understanding. One is suggested to read the original paper.
+**disclaimer**: This paragraph is only my personal understanding. One is suggested to read the original paper. Details related to implemtation are not discussed here.
 
 Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint arXiv:2106.12423 (2021).
 
