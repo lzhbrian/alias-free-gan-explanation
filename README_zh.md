@@ -57,6 +57,10 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 * 我们说的 **高频、低频** 就是指信号通过 **傅里叶变换** 后在 **频域** 里的频率大小
 * 既然是采样， 就需要满足 **奈奎斯特-香农采样定律**（以下简称采样定律）， 就是说信号 **本身的频率** 必须小于 **采样率的一半**（也称 **奈奎斯特频率=采样率/2**）， 这样才不会出现 **aliasing（混叠）** 的现象。
 
+<div align="center">
+  <img src="plot/aliasing.png" style="width:600px;" />
+</div>
+
 
 
 #### 1.2 现有 GAN 网络的问题
