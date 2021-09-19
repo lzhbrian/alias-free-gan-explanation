@@ -87,20 +87,26 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 
 现有 GAN 网络包括的一些基本操作有： Conv， Upsampling， Downsampling， Nonlinearity 四种。 接下来我们就来分别分析， 它们是否有 aliasing 的问题， 并且如果有的话应该如何改进。
 
-<div align="center">
-    <img src="plot/upsample.png" alt="upsample" style="width:300px;" />
-  <img src="plot/downsample.png" alt="upsample" style="width:300px;" />
-</div>
 
 * Conv
     * 即卷积。 它的作用是将原信号在局部进行重组， 产生更符合我们预期的新信号。
     * conv 本身不引入新的频率（时域卷积等价于频域相乘， 所以频域里原信号是0的地方还是0）， 所以不会出现 aliasing 的问题。 
 * Downsampling
     * 顾名思义， 降低采样率。 它的作用是让原先被采样的连续信号所能包含的频率范围变小
-    * 需要注意的是， 降低后的采样率很有可能超过信号本身的频率的2倍， 因此在降低采样率前， 需要先过一个低通滤波器， 使得信号本身的频率不超过降低采样率后的奈奎斯特频率。 （见上图）
+    
+    * 需要注意的是， 降低后的采样率很有可能小于信号本身的频率的2倍， 因此在降低采样率前， 需要先过一个低通滤波器， 使得信号本身的频率不超过降低采样率后的奈奎斯特频率。 （见下图）
+    
+        <div align="center">
+          <img src="plot/downsample.png" alt="upsample" style="width:300px;" />
+        </div>
 * Upsampling
     * 顾名思义， 提高采样率。它的作用是扩大被采样的连续信号所能包含的频率范围（根据采样定律）， 使其能包含更高频的信息， 但注意其本身并不引入新的频率。
-    * 需要注意的是， 虽然其本身并不会发生 aliasing 的问题， 但是在信号处理里分析过， 上采样时的一般操作是先补0， 然后再低通滤波去除频域镜像， 所以这里也需要一个低通滤波器。 注意， 这里使用的低通滤波器 与 前面 downsampling 的参数是不一样的， 虽然 cutoff 都会设置成较低频信号采样率的一半， 但是这里低通滤波器的采样率是输出信号的采样率（这会让低通滤波器的频域响应在不同周期处进行重复） （见上图）
+    
+    * 需要注意的是， 虽然其本身并不会发生 aliasing 的问题， 但是在信号处理里分析过， 上采样时的一般操作是先补0， 然后再低通滤波去除频域镜像， 所以这里也需要一个低通滤波器。 注意， 这里使用的低通滤波器 与 前面 downsampling 的参数是不一样的， 虽然 cutoff 都会设置成较低频信号采样率的一半， 但是这里低通滤波器的采样率是输出信号的采样率（这会让低通滤波器的频域响应在不同周期处进行重复） （见下图）
+    
+        <div align="center">
+            <img src="plot/upsample.png" alt="upsample" style="width:300px;" />
+        </div>
 * Nonlinearity
     * 逐点进行非线性操作。 它的作用就是引入新的高频信息。
     * nonlinearity 引入的新频率包括两部分： 满足采样定理的部分 <s/2、 不满足采样定理 >s/2）。 我们想要的是前者。 如果直接对离散特征图做 nonlinearity， nonlinearity 产生的大于奈奎斯特频率的部分， 就会让离散的特征图直接出现 aliasing 的现象。 对此， 作者提出了一个很有意思的做法， 先 upsampling m 倍 ， 然后做 nonlinearity， 再 downsampling 回来。 这个做法直观来理解就是先 upsampling 提高奈奎斯特频率， 使得 nonlinearity 出现的新频率尽量不超过新的奈奎斯特频率， 然后再 downsampling （包括 low pass filter 滤除大于原来奈奎斯特频率的部分） 回来到原采样率下。 这里作者发现 m 一般取 2 就足够了（见 [视频](videos/video_7_figure_2_right_filtered_nonlinearity.mp4)）
@@ -170,9 +176,15 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 * （config E） 将特征图往外扩大 10 个px
     * 在上面的理论假设里， 信号都是无限的， 并且边缘处的 Conv， Upsampling， Downsampling 计算也会使用到特征图边界外的值， 因此在这里我们可以采用如下的做法来模拟特征图无限的情况：
         * 将输入特征图往外扩 10个px 的 margin 
+        
         * 如果没有 upsample， 那么 feature map 还是有 10px 的 margin， 不用特别处理。
+        
         * 如果有 upsample， 由于 margin 也会 upsample m 倍， 所以要 在 upsample 做完操作后， 再把>10px margin 的部分 crop 掉。
-
+        
+            <div align="center">
+              <img src="source/image-20210919175525459.png" alt="image-20210919175525459" style="width:150px;" />
+            </div>
+    
 * （config E,G,T） 采样率及低通滤波设计
     * （E）按照上面的分析， 一个很直观的做法 （critical sampling） 就是将 低通滤波器 的 cutoff fc 设置为采样率的一半 s/2， fh 设置成 (\sqrt{2} - 1) (s/2)。 
     * （G）但是上面这么做的话其实比较危险， 因为我们的低通滤波器是近似的， 在频域不是理想的矩形窗， 因此在临界处会有一些漏掉的频率依然能够通过。 所以在这里， 作者将 cutoff fc 设置成了 s/2 - fh， 直观上理解就是保留少一些， 多滤掉一些， 比较保险不会产生 aliasing。 除了最后几层， cutoff 还是设置成了 s/2， 因为最后一层确实特别需要比较高频的特征。
@@ -223,12 +235,11 @@ Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint 
 <div align="center">
   <img src="source/image-20210917205044756.png" alt="image-20210917205044756" style="width:300px;" />
 </div>
-
 * FFHQ (1024×1024) 
     * 三个 G 的参数量分别是：30.0M, 22.3M, 15.8M
     * 训练时间分别是： 1106, 1576 (+42%), 2248 (+103%) GPU 小时
-* Texture Sticking 的现象消失了 （见 [视频](videos/video_0_ffhq_cinemagraphs.mp4)， [视频](videos/video_1_ffhq_cinemagraphs.mp4)）
 * Equivariant 等变性（见 [视频](videos/video_5_figure_3_left_equivariance_quality.mp4)， [视频](videos/video_6_figure_5_right_g-cnn_comparison.mp4)）
+* Texture Sticking 的现象消失了 （见 [视频](videos/video_0_ffhq_cinemagraphs.mp4)， [视频](videos/video_1_ffhq_cinemagraphs.mp4)）
 
 
 
