@@ -11,7 +11,7 @@ Trying to understand alias-free-gan in my own way.
 
 Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint arXiv:2106.12423 (2021).
 
-[[Original Paper]](https://arxiv.org/abs/2106.12423) [[Code]](https://github.com/NVlabs/alias-free-gan)
+[[Original Paper]](https://arxiv.org/abs/2106.12423) [[Code]](https://github.com/NVlabs/stylegan3)
 
 
 
