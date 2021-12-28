@@ -10,7 +10,7 @@
 **免责声明**： 仅是我自己对这篇文章的理解， 还是建议去看原文。 Repo 里放的视频都来自 [原文的官网](https://nvlabs.github.io/alias-free-gan/)。 一些与代码实现相关的细节在这里没有讨论。
 
 Karras, Tero, et al. Alias-Free Generative Adversarial Networks. arXiv preprint arXiv:2106.12423 (2021).
-[[原论文]](https://arxiv.org/abs/2106.12423) [[代码]](https://github.com/NVlabs/alias-free-gan)
+[[原论文]](https://arxiv.org/abs/2106.12423) [[代码]](https://github.com/NVlabs/stylegan3)
 
 
 
